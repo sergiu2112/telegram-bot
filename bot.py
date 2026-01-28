@@ -9,7 +9,7 @@ from telegram.ext import (
 
 TOKEN = os.getenv("TOKEN")
 
-# /start command
+
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     keyboard = [
         [InlineKeyboardButton("ℹ️ Info", callback_data="info")],
@@ -20,33 +20,35 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     reply_markup = InlineKeyboardMarkup(keyboard)
 
     await update.message.reply_text(
-        "Salut 👋\nAlege o opțiune din meniu:",
+        "👋 Salut! Alege o opțiune din meniu:",
         reply_markup=reply_markup,
     )
 
-# Button handler
-async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
+async def buttons(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
 
     if query.data == "info":
-        await query.edit_message_text("ℹ️ Acesta este un bot Telegram demo.")
+        await query.edit_message_text("ℹ️ Acesta este un bot demo.")
     elif query.data == "setari":
         await query.edit_message_text("⚙️ Setările nu sunt încă disponibile.")
     elif query.data == "inchide":
-        await query.edit_message_text("❌ Meniu închis.")
+        await query.edit_message_text("❌ Meniul a fost închis.")
+
 
 def main():
     if not TOKEN:
-        raise ValueError("TOKEN nu este setat în variabilele de mediu")
+        raise RuntimeError("TOKEN nu este setat în Environment Variables")
 
     app = ApplicationBuilder().token(TOKEN).build()
 
     app.add_handler(CommandHandler("start", start))
-    app.add_handler(CallbackQueryHandler(button_handler))
+    app.add_handler(CallbackQueryHandler(buttons))
 
     print("🤖 Botul rulează...")
     app.run_polling()
+
 
 if name == "__main__":
     main()
